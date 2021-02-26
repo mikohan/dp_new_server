@@ -1,0 +1,76 @@
+{% extends 'admin/dictionary/dict_base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% block page_content %}
+
+<div class="wrapper-my container-fluid">
+    <div class="row">
+        <div class="col-2">
+        </div>
+        <div class="col-2">
+            <div class="card grey my-card">
+              <div class="card-body  text-center pb-0 pt-0">
+                <div class="d-flex">
+                  Групп:<span class="bred text-center">{{ counts.gk }}</span>
+                </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card grey my-card">
+              <div class="card-body  text-center pb-0 pt-0">
+                <div class="d-flex">
+            <div>Ключевых слов: <span  class="bred">{{ counts.kk|intcomma }}</span> / {{ counts.kk_tot|intcomma }}</div>
+                    </div>
+              </div>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="card grey my-card">
+              <div class="card-body  text-center pb-0 pt-0">
+                <div class="d-flex">
+            <div>Номенклатуры: <span  class="bred">{{ counts.nk|intcomma }}</span> / {{ counts.nk_tot|intcomma }}</div>
+                    </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="row list-style mt-1 color-bg">
+        <div class="col-2">
+        </div>
+        <div class="col-2" id="top-div">
+            <form action="{% url 'dictionary:main_work' %}" method="get">
+                <input type="hidden" name="save_group" value="save" />
+                <button id="butt" class="btn btn-outline-success btn-sm">Сохранить работу</button>
+                {% crispy key_form %}
+
+            </form>
+        </div>
+        <div class="col-2">
+
+            {% for group in groups %}
+                <div ><a href="{% url 'dictionary:main_work' %}?delete_group={{ group.id}}" class="mk-alert-del"><span class="bred2"> <i class="fa fa-trash" aria-hidden="true"></i></span></a> | <a class="chk-gr" style="font-size:12px;" data-pk="{{ group.name }}" id="check_group-{{ group.id }}"  href="#">{{ group.name }}</a></div>
+            {% endfor %}
+        </div>
+        <div id="kernel_id" class="col-3">
+            <ul>
+                {% for kernel in kernels %}
+                <li title="Слова из Ядра">{{ kernel }}<span class="float-right bgreen" title="Частотность">{{ kernel.freq }}</span></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div id="noms_id" class="col-5">
+            <ul>
+                {% for nom in nomenklatura %}
+                <li title="Слова из Номенклатуры">{{ nom }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+<script src="{% static 'js/dictionary.js' %}"></script>
+<script src="{% static 'js/mkalert.js' %}"></script>
+{% endblock %}

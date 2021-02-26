@@ -1,0 +1,43 @@
+{% extends 'admin/adm_base.html' %}
+{% load static %}
+{% block page_content %}
+
+{% include 'admin/snippets/breadcrumbs.html' %}
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Категория</th>
+            <th>Всего номеров</th>
+            <th>Проверено</th>
+            <th>Осталось</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>000</td>
+            <td>
+                <a href="{% url 'adminnocat' %}">Без категории</a>
+            </td>
+            <td><span class="bblue">{{ nocat.count }}</span></td>
+            <td><span class="bgreen">{{ nocat.c_count }}</span></td>
+            <td><span class="bred">{{ nocat.u_count }}</span></td>
+        </tr>
+        {% for object in objects %}
+        <tr>
+            <td>{{ object.id }}</td>
+            {% if single_car %}
+            <td><a href="{% url 'adminphotolisting' object.id %}?car={{ single_car }}">{{ object.name }}</a></td>
+            {% else %}
+            <td><a href="{% url 'adminphotolisting' object.id %}">{{ object.name }}</a></td>
+            {% endif %}
+            <td><span class="bblue">{{ object.p_count }}</span></td>
+            <td><span class="bgreen">{{ object.checked_count }}</span></td>
+            <td><span class="bred">{{ object.unchecked_count }}</span></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
