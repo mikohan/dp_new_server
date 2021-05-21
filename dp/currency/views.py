@@ -5,7 +5,6 @@ from .cron import run_api
 import json
 from rest_framework.exceptions import APIException
 
-from django_cron import CronJobBase, Schedule
 
 
 class CurrencyAPIView(ListAPIView):

@@ -113,5 +113,6 @@ urlpatterns = [
     path('catalognumber/<str:old_url>/', analog_part_brand, name='analog'),
     path('emailformsend', e_form_view, name='send_e_form'),
     path('ad/', include(('admin_ads_work.urls', 'admin_ads_works'), namespace='ad')),
+    path('currency/', include('currency.urls')),
     path('', home, name='home'),
 ]# + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
