@@ -9,6 +9,8 @@ from django.db.models.signals import pre_save
 from .utils import random_string_generator
 from urllib.parse import quote
 from star_ratings.models import Rating
+from datetime import datetime
+from currency.models import UsdRate
 
 class Categories(models.Model):
     name = models.CharField(max_length=100, null=True)
@@ -39,7 +41,7 @@ class Products(models.Model):
     car = models.CharField(max_length=255, null=True)
     car_model = models.CharField(max_length=255, null=True)
     cross = models.ManyToManyField(Cross, verbose_name="cross verbose name")
-    price = models.FloatField(null=True, blank=True)
+    _price = models.FloatField(null=True, blank=True)
     _price_eur = models.FloatField(null=True, blank=True, default=0)
     cond = models.BooleanField(default=True, null=True)
     weight = models.FloatField(blank=True, null=True)
@@ -53,6 +55,15 @@ class Products(models.Model):
     def get_absolute_url(self):
        return reverse('detailed', kwargs={'pk': self.id})
 
+    @property
+    def price(self):
+        today = datetime.now().date()
+        rate = 90
+        try:
+            rate = UsdRate.objects.get(date=today)
+        except:
+            pass
+        return round(float(self._price_eur) * float(rate.rate))
 
 
     @property
