@@ -9,7 +9,7 @@ from django.db.models.signals import pre_save
 from .utils import random_string_generator
 from urllib.parse import quote
 from star_ratings.models import Rating
-from datetime import datetime
+from datetime import datetime, timedelta
 from currency.models import UsdRate
 
 class Categories(models.Model):
@@ -58,12 +58,15 @@ class Products(models.Model):
     @property
     def price(self):
         today = datetime.now().date()
+        yesterday = today - timedelta(days=1) 
         rate = 90
         try:
-            rate = UsdRate.objects.get(date=today)
+            obj = UsdRate.objects.get(date=yesterday)
+            rate = obj.rate
+
         except:
-            pass
-        return round(float(self._price_eur) * float(rate.rate))
+            obj = UsdRate.objects.first()
+        return round(float(self._price_eur) * float(rate))
 
 
     @property

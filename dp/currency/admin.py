@@ -1,3 +1,6 @@
 from django.contrib import admin
+from currency.models import UsdRate
 
-# Register your models here.
+admin.site.register(UsdRate)
+
+
