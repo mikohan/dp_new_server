@@ -82,7 +82,7 @@ def register_view(request):
             user.set_password(password)
             user.save()
             new_user = authenticate(username=user.username, password=password)
-            print(new_user)
+            login(request, new_user)
             return redirect("account")
         # if login(request, new_user):
         #     return redirect("account")
