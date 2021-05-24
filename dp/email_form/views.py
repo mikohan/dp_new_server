@@ -6,6 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import re
 from django.contrib import messages
+from accounts.models import BlackListEmail
 
 
 def e_form_view(request, *args, **kwargs):
@@ -19,6 +20,15 @@ def e_form_view(request, *args, **kwargs):
             phone=phone, name=email_name
         )
         if capcha == "7":
+            try:
+                black = BlackListEmail.objects.all()
+                black_list = [x.email for x in black]
+                if email_name.strip() in black_list or phone.strip() in black_list:
+                    return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
+            except:
+                return HttpResponseRedirect(request.META.get("HTTP_REFERER"))
+
             send_mail(
                 "Заказ звонка с Ducatoparts.ru",
                 f"Пришел запрос на обратный звонок. Телефон - {phone}. Имя - {email_name}",
