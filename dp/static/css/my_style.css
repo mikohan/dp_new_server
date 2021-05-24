@@ -330,6 +330,9 @@
 .register-form__captcha-right {
   color: yellow;
 }
+.call-form__equal {
+  margin-left: 10px;
+}
 .register-form__equal {
   margin-right: 10px;
 }

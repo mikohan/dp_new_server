@@ -15,12 +15,6 @@
 								<div><img src="{% static 'images/loader.svg' %}" data-src="{% static im %}" alt="{{ object.name }}"></div>
 								{% endfor %}
 
-								<!--<div>
-									<div class="tt-video-block">
-										<a href="#" class="link-video"></a>
-										<video class="movie" src="{% static 'video/video.mp4' %}" poster="{% static 'video/video_img.jpg' %}"></video>
-									</div>
-								</div>-->
 							</div>
 						</div>
 						<div class="col-12 col-md-7 col-lg-6">
@@ -54,7 +48,7 @@
 											</div>
 										</div>
 										<div class="col-item">
-                                            <a href="{% url 'add_to_cart' %}?product_id={{ object.id  }}" id="cart_button-{{ object.id }}" class="btn btn-lg cart_button" data-pk="{{ object.id  }}"><i class="icon-f-39"></i>В Корзину</a>
+                        <a href="{% url 'add_to_cart' %}?product_id={{ object.id  }}" id="cart_button-{{ object.id }}" class="btn btn-lg cart_button" data-pk="{{ object.id  }}"><i class="icon-f-39"></i>В Корзину</a>
 										</div>
 									</div>
 								</div>
