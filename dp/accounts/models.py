@@ -15,7 +15,11 @@ class Profile(models.Model):
 
 
 class BlackListEmail(models.Model):
-    email = models.EmailField(max_length=255)
+    email = models.EmailField(max_length=255, unique=True)
+
+    def save(self, *args, **kwargs):
+        self.email = self.email.strip()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
