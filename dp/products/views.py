@@ -20,21 +20,27 @@ from blogs.models import Blogs
 from django.shortcuts import redirect
 from django.contrib import messages
 
+
 def show_cars():
-    qs = Products.objects.values('car').annotate(dcount=Count('car'))
+    qs = Products.objects.values("car").annotate(dcount=Count("car"))
     return qs
+
 
 def show_brands(pk, car, cat):
     for k, v in kwargs.items():
         pass
-    qs = Products.objects.filter(cat=cat).values('brand').annotate(dbrand=Count('brand'))
+    qs = (
+        Products.objects.filter(cat=cat).values("brand").annotate(dbrand=Count("brand"))
+    )
     return qs
+
 
 def show_price(price_min, price_max):
     price_range = Products.objects.filter(price__range=[price_min, price_max])
-    p_min = Products.objects.all().aggregate(Min('price'))
-    p_max = Products.objects.all().aggregate(Max('price'))
+    p_min = Products.objects.all().aggregate(Min("price"))
+    p_max = Products.objects.all().aggregate(Max("price"))
     return p_min, p_max, price_range
+
 
 def categories_tree(pk):
 
@@ -48,107 +54,112 @@ def categories_tree(pk):
         for cat_sub in cats_sub:
             c_l.append(cat_sub.id)
         cats = Categories.objects.filter(parent_id__in=c_l)
-    return cats        
-    
+    return cats
+
+
 def pag_def(show):
-    if show == '40':
+    if show == "40":
         return 40
-    elif show == '60':
+    elif show == "60":
         return 60
-    elif show == 'all':
+    elif show == "all":
         return 200
     else:
         return 20
 
+
 def newparts(request):
-    sort = request.GET.get('sort', None)
-    show = request.GET.get('show', None)
-    if sort == '2':
-        qs = Products.objects.all().order_by('price')[200]
-    elif sort == '3':
-        qs = Products.objects.all().order_by('-price')[:200]
+    sort = request.GET.get("sort", None)
+    show = request.GET.get("show", None)
+    if sort == "2":
+        qs = Products.objects.all().order_by("price")[200]
+    elif sort == "3":
+        qs = Products.objects.all().order_by("-price")[:200]
     else:
-        qs = Products.objects.all().order_by('?')[:200]
+        qs = Products.objects.all().order_by("?")[:200]
 
     pag = pag_def(show)
     cats = Categories.objects.filter(parent_id=0)
     try:
         p = Paginator(qs, pag)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         objects = p.get_page(page)
     except:
         pass
-    if request.GET.get('load_all') == 'all':
+    if request.GET.get("load_all") == "all":
         objects = objects
 
     context = {
-            'objects': objects, 
-            'categories': cats,
-            'cars': show_cars(),
-            }
-    return render(request, 'products/newparts.html', context)
+        "objects": objects,
+        "categories": cats,
+        "cars": show_cars(),
+    }
+    return render(request, "products/newparts.html", context)
 
-#Функция delete session car
+
+# Функция delete session car
 def del_car(request, car, slug):
-    if request.session.get('car'):
-        del request.session['car']
-        return redirect('subcat', slug)
-
+    if request.session.get("car"):
+        del request.session["car"]
+        return redirect("subcat", slug)
 
 
 def cars(request, car):
     if car:
-        request.session['car'] = car
-    sort = request.GET.get('sort', None)
-    show = request.GET.get('show', None)
-    if sort == '3':
-        qs = Products.objects.filter(car=car).order_by('-price')[:200]
-    elif sort == '2':
-        qs = Products.objects.filter(car=car).order_by('price')[:200]
-    else: 
-        qs = Products.objects.filter(car=car).order_by('?')[:200]
+        request.session["car"] = car
+    sort = request.GET.get("sort", None)
+    show = request.GET.get("show", None)
+    if sort == "3":
+        qs = Products.objects.filter(car=car).order_by("-price")[:200]
+    elif sort == "2":
+        qs = Products.objects.filter(car=car).order_by("price")[:200]
+    else:
+        qs = Products.objects.filter(car=car).order_by("?")[:200]
     pag = pag_def(show)
     cats_tmp = Categories.objects.filter(parent_id=0)
     cats = []
     for c in cats_tmp:
         nums = Products.objects.filter(car=car, cat__in=categories_tree(c.id)).count()
         if nums != 0:
-            setattr(c, 'prod_count', nums)
+            setattr(c, "prod_count", nums)
             cats.append(c)
     try:
         p = Paginator(qs, pag)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         objects = p.get_page(page)
     except:
         pass
-    if request.GET.get('load_all') == 'all':
+    if request.GET.get("load_all") == "all":
         objects = qs
 
     context = {
-            'objects': objects,
-            'cars': show_cars(),
-            'categories': cats,
-            'car': car,
-            }
-    return render(request, 'products/newparts.html', context)
+        "objects": objects,
+        "cars": show_cars(),
+        "categories": cats,
+        "car": car,
+    }
+    return render(request, "products/newparts.html", context)
+
 
 def cars_subcats(request, car, slug, **kwargs):
     if car:
-        request.session['car'] = car
-    brand = request.GET.get('brand', None)
+        request.session["car"] = car
+    brand = request.GET.get("brand", None)
     cats_tmp = Categories.objects.get(slug=slug)
     second_level_cats = Categories.objects.filter(parent_id=cats_tmp.id)
     cats = []
     for c in second_level_cats:
         nums = Products.objects.filter(car=car, cat__in=categories_tree(c.id)).count()
         if nums != 0:
-            setattr(c, 'prod_count', nums) 
+            setattr(c, "prod_count", nums)
             cats.append(c)
 
-    cats_list = [] 
+    cats_list = []
     if len(cats) == 0:
         if brand:
-            qs = Products.objects.filter(car=car, cat=cats_tmp.id, brand=brand).distinct()
+            qs = Products.objects.filter(
+                car=car, cat=cats_tmp.id, brand=brand
+            ).distinct()
         else:
             qs = Products.objects.filter(car=car, cat=cats_tmp.id).distinct()
     else:
@@ -156,75 +167,74 @@ def cars_subcats(request, car, slug, **kwargs):
             cats_list.append(c.id)
         groups = Categories.objects.filter(parent_id__in=cats_list)
         for g in groups:
-            cats_list.append(g.id) 
+            cats_list.append(g.id)
         if brand:
-            qs = Products.objects.filter(car=car, cat__in=cats_list, brand=brand).distinct()
+            qs = Products.objects.filter(
+                car=car, cat__in=cats_list, brand=brand
+            ).distinct()
         else:
             qs = Products.objects.filter(car=car, cat__in=cats_list).distinct()
-    
-    sort = request.GET.get('sort', None)
-    show = request.GET.get('show', None)
-    if sort == '2':
-        qs = qs.order_by('price')
-    elif sort == '3':
-        qs = qs.order_by('-price')
+
+    sort = request.GET.get("sort", None)
+    show = request.GET.get("show", None)
+    if sort == "2":
+        qs = qs.order_by("price")
+    elif sort == "3":
+        qs = qs.order_by("-price")
     else:
-        qs = qs.order_by('?') 
+        qs = qs.order_by("?")
     if not qs:
         raise Http404
 
     pag = pag_def(show)
-    brands = qs.values('brand').annotate(brand_count=Count('brand')) 
+    brands = qs.values("brand").annotate(brand_count=Count("brand"))
     h1 = cats_tmp.name
     try:
         p = Paginator(qs, pag)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         objects = p.get_page(page)
     except:
         pass
-    if request.GET.get('load_all') == 'all':
+    if request.GET.get("load_all") == "all":
         objects = qs
 
-
-
-    #Article founder starts here
+    # Article founder starts here
     search_list = search_splitter(h1)
     articles = Blogs.objects.all()
     art_w_list = []
     for i, article in enumerate(articles):
         we = get_weight(article.text, search_list)
         if we > 0.02:
-            art_w_list.append({ 'article': article, 'weight': we})
+            art_w_list.append({"article": article, "weight": we})
         if i > 10:
             break
-    
 
     context = {
-            'objects': objects,
-            'slug': slug,
-            'cars': show_cars(),
-            'categories': cats,
-            'car': car,
-            'brands': brands,
-            'title_h1': h1,
-            'car': car,
-            'brand': brand,
-            'cat': cats_tmp,
-            'articles': art_w_list,
-            }
-    
-    return render(request, 'products/newparts.html', context)
+        "objects": objects,
+        "slug": slug,
+        "cars": show_cars(),
+        "categories": cats,
+        "car": car,
+        "brands": brands,
+        "title_h1": h1,
+        "car": car,
+        "brand": brand,
+        "cat": cats_tmp,
+        "articles": art_w_list,
+    }
+
+    return render(request, "products/newparts.html", context)
+
 
 # HERE IS SAME STUFF BUT NO CAR
 
+
 def subcat(request, slug, **kwargs):
-    if request.session.get('car'):
-        car = request.session['car']
-    brand = request.GET.get('brand', None)
+    if request.session.get("car"):
+        car = request.session["car"]
+    brand = request.GET.get("brand", None)
     cats_tmp = Categories.objects.get(slug=slug)
     second_level_cats = Categories.objects.filter(parent_id=cats_tmp.id)
-
-
 
     if cats_tmp.id < 99:
         bread1 = Categories.objects.get(slug=slug, parent_id=0)
@@ -239,15 +249,14 @@ def subcat(request, slug, **kwargs):
         bread2 = Categories.objects.get(id=bread3.parent_id)
         bread1 = Categories.objects.get(id=bread2.parent_id)
 
-
     cats = []
     for c in second_level_cats:
         nums = Products.objects.filter(cat__in=categories_tree(c.id)).count()
         if nums != 0:
-            setattr(c, 'prod_count', nums) 
+            setattr(c, "prod_count", nums)
             cats.append(c)
 
-    cats_list = [] 
+    cats_list = []
     if len(cats) == 0:
         if brand:
             qs = Products.objects.filter(cat=cats_tmp.id, brand=brand).distinct()
@@ -258,68 +267,68 @@ def subcat(request, slug, **kwargs):
             cats_list.append(c.id)
         groups = Categories.objects.filter(parent_id__in=cats_list)
         for g in groups:
-            cats_list.append(g.id) 
+            cats_list.append(g.id)
         if brand:
             qs = Products.objects.filter(cat__in=cats_list, brand=brand).distinct()
         else:
             qs = Products.objects.filter(cat__in=cats_list).distinct()
 
-    sort = request.GET.get('sort', None)
-    show = request.GET.get('show', None)
-    if request.session.get('car'):
-        car = request.session['car']
+    sort = request.GET.get("sort", None)
+    show = request.GET.get("show", None)
+    if request.session.get("car"):
+        car = request.session["car"]
         qs = qs.filter(car=car)
-    if sort == '2':
-        qs = qs.order_by('price')
-    elif sort == '3':
-        qs = qs.order_by('-price')
+    if sort == "2":
+        qs = qs.order_by("price")
+    elif sort == "3":
+        qs = qs.order_by("-price")
     else:
-        qs = qs.order_by('?') 
+        qs = qs.order_by("?")
     qs = qs
     pag = pag_def(show)
-    
-    brands = qs.values('brand').annotate(brand_count=Count('brand')) 
+
+    brands = qs.values("brand").annotate(brand_count=Count("brand"))
     h1 = cats_tmp.name
     try:
         p = Paginator(qs, pag)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         objects = p.get_page(page)
     except:
         pass
-    if request.GET.get('load_all') == 'all':
+    if request.GET.get("load_all") == "all":
         objects = qs
-    
 
-    #Article founder starts here
+    # Article founder starts here
     search_list = search_splitter(h1)
     articles = Blogs.objects.all()
     art_w_list = []
     for i, article in enumerate(articles):
         we = get_weight(article.text, search_list)
         if we > 0.02:
-            art_w_list.append({ 'article': article, 'weight': we})
+            art_w_list.append({"article": article, "weight": we})
         if i > 10:
             break
 
-
     context = {
-            'objects': objects,
-            'cars': show_cars(),
-            'slug': slug,
-            'categories': cats,
-            'brands': brands,
-            'title_h1': h1,
-            'brand': brand,
-            'bread1': bread1,
-            'bread2': bread2,
-            'bread3': bread3,
-            'cat': cats_tmp,
-            'articles': art_w_list,
-            }
-    
-    return render(request, 'products/newparts.html', context)
+        "objects": objects,
+        "cars": show_cars(),
+        "slug": slug,
+        "categories": cats,
+        "brands": brands,
+        "title_h1": h1,
+        "brand": brand,
+        "bread1": bread1,
+        "bread2": bread2,
+        "bread3": bread3,
+        "cat": cats_tmp,
+        "articles": art_w_list,
+    }
 
-#Detailed product view starts here
+    return render(request, "products/newparts.html", context)
+
+
+# Detailed product view starts here
+
 
 def detailed(request, pk):
     cats = Categories.objects.filter(parent_id=0)
@@ -337,37 +346,37 @@ def detailed(request, pk):
     try:
         similar_products = Products.objects.filter(cat=obj.cat.first().id)
     except:
-        similar_products = Products.objects.order_by('?')[:8]
-
+        similar_products = Products.objects.order_by("?")[:8]
 
     comments = Comment.objects.filter_by_instance(obj)
     comments = Comment.objects.filter_by_instance(obj)
 
     initial_data = {
-        'content_type': obj.get_content_type,
-        'object_id': obj.id,
+        "content_type": obj.get_content_type,
+        "object_id": obj.id,
     }
 
     form = CommentForm(request.POST or None, initial=initial_data)
     user_string = None
 
     # Allow leave comments only for authenticated users
+    message = None
     if form.is_valid() and request.user.is_authenticated:
 
         if request.user.is_authenticated:
             user_string = request.user
-        elif form.cleaned_data.get('user') is not None:
-            user_string = form.cleaned_data.get('user')
+        elif form.cleaned_data.get("user") is not None:
+            user_string = form.cleaned_data.get("user")
         else:
-            user_string = 'ANONIMUS'
+            user_string = "ANONIMUS"
 
-        c_type = form.cleaned_data.get('content_type')
+        c_type = form.cleaned_data.get("content_type")
         content_type = ContentType.objects.get(model=c_type)
-        obj_id = form.cleaned_data.get('object_id')
-        content_data = form.cleaned_data.get('content')
+        obj_id = form.cleaned_data.get("object_id")
+        content_data = form.cleaned_data.get("content")
         parent_obj = None
         try:
-            parent_id = request.POST.get('parent_id')
+            parent_id = request.POST.get("parent_id")
         except:
             parent_id = None
 
@@ -385,81 +394,80 @@ def detailed(request, pk):
         )
         url = new_comment.content_object.get_absolute_url()
         send_mail(
-                'Ducatoparts.ru новый комментарий',
-                f'На дукато партс оставили новый комментарий на странице {url}, Текст: {content_data}',
-                'angara99@gmail.com',
-                settings.SHOP_EMAILS_MANAGERS,
-                fail_silently=False,
-                )
+            "Ducatoparts.ru новый комментарий",
+            f"На дукато партс оставили новый комментарий на странице {url}, Текст: {content_data}",
+            "angara99@gmail.com",
+            settings.SHOP_EMAILS_MANAGERS,
+            fail_silently=False,
+        )
         return HttpResponseRedirect(url)
     else:
-        pass 
+        message = "Только зарегестрированные пользователи могут оставлять комментарий"
 
-    #comments count stuff
+    # comments count stuff
     def check_comment_count():
         count = comments.count() % 10
-        comment_word = 'КОММЕНТАРИЕВ'
+        comment_word = "КОММЕНТАРИЕВ"
         if count == 1:
-            comments_word = 'КОММЕНТАРИЙ'
+            comments_word = "КОММЕНТАРИЙ"
         elif count > 1 and count < 5:
-            comment_word = 'КОММЕНТАРИЯ'
+            comment_word = "КОММЕНТАРИЯ"
         elif count >= 5:
-            comment_word = 'КОММЕНТАРИЕВ'
+            comment_word = "КОММЕНТАРИЕВ"
         return comment_word
 
     # Форма звонка Вася
     e_form = EmailFormLight(request.POST or None)
 
-    #Article founder starts here
+    # Article founder starts here
     search_list = search_splitter(obj.name)
     articles = Blogs.objects.all()
     art_w_list = []
     for i, article in enumerate(articles):
         we = get_weight(article.text, search_list)
         if we > 0.02:
-            art_w_list.append({ 'article': article, 'weight': we})
+            art_w_list.append({"article": article, "weight": we})
         if i > 10:
             break
-    #Добавляем аналоги
+    # Добавляем аналоги
     analogs = Products.objects.filter(cat_n=obj.cat_n).exclude(id=obj.id)
     if not analogs:
         analogs = None
 
-
-
     context = {
-            'object': obj,
-            'categories': cats,
-            'cars': show_cars(),
-            'comments': comments,
-            'comment_count_word': check_comment_count(),
-            'comment_form': form,
-            'email_form': e_form,
-            'bread_sub1': bread_sub1,
-            'bread_sub2': bread_sub2,
-            'similar_products': similar_products,
-            'aver': aver,
-            'articles': art_w_list,
-            'analogs': analogs,
-
-            }
-    return render(request, 'products/product.html', context)
+        "object": obj,
+        "categories": cats,
+        "cars": show_cars(),
+        "comments": comments,
+        "comment_count_word": check_comment_count(),
+        "comment_form": form,
+        "email_form": e_form,
+        "bread_sub1": bread_sub1,
+        "bread_sub2": bread_sub2,
+        "similar_products": similar_products,
+        "aver": aver,
+        "articles": art_w_list,
+        "analogs": analogs,
+        "message": message,
+    }
+    return render(request, "products/product.html", context)
 
 
 def search(request):
-    #qs = Products.objects.filter(name__icontains="фильтр").distinct()
+    # qs = Products.objects.filter(name__icontains="фильтр").distinct()
 
-    sale_prod = settings.SALES_ON_SEARCH 
+    sale_prod = settings.SALES_ON_SEARCH
     brakes = Products.objects.filter(id__in=sale_prod)
 
-    search = request.GET.get('search', None)
+    search = request.GET.get("search", None)
     search = strip_tags(search)
-    search = search.strip(' ')
+    search = search.strip(" ")
 
     def search_splitter(search):
         from .stemmer import Porter
+
         s = Porter()
-        search_list = search.split(' ')
+        search_list = search.split(" ")
         new_search_list = []
         for word in search_list:
             try:
@@ -468,57 +476,57 @@ def search(request):
             except:
                 n_w = word
             new_search_list.append(n_w)
-        return(new_search_list)
+        return new_search_list
 
-    cars_l = request.GET.getlist('car')
-    cats_l = request.GET.getlist('cat')
-    brands_l = request.GET.getlist('brand')
-    tag = request.GET.get('tag')
+    cars_l = request.GET.getlist("car")
+    cats_l = request.GET.getlist("cat")
+    brands_l = request.GET.getlist("brand")
+    tag = request.GET.get("tag")
 
     if search is None:
-        qs_s = f'Products.objects.all().distinct().filter('
+        qs_s = f"Products.objects.all().distinct().filter("
         if cars_l:
-            qs_s += f'Q(car__in={cars_l}) & '
+            qs_s += f"Q(car__in={cars_l}) & "
         if cats_l:
-            qs_s += f'Q(cat__in={cats_l}) & '
+            qs_s += f"Q(cat__in={cats_l}) & "
         if brands_l:
-            qs_s += f'Q(brand__in={brands_l}) & '
+            qs_s += f"Q(brand__in={brands_l}) & "
         else:
             pass
         qs_s = qs_s.rstrip()
-        qs_s = qs_s.rstrip('&').rstrip()
-        qs_s += ')[:100]'
-        qs = eval(qs_s)        
+        qs_s = qs_s.rstrip("&").rstrip()
+        qs_s += ")[:100]"
+        qs = eval(qs_s)
     else:
         search_list = search_splitter(search)
 
         if len(search_list) == 1:
             qs_s = f'Products.objects.filter(Q(name__icontains="{search_list[0]}") | Q(cat_n__icontains="{search_list[0]}")).distinct().filter('
         else:
-            qs_s = f'Products.objects.filter('
+            qs_s = f"Products.objects.filter("
             for word in search_list:
                 qs_s += f'Q(name__icontains="{word}") & '
 
         if cars_l:
-            qs_s += f'Q(car__in={cars_l}) & '
+            qs_s += f"Q(car__in={cars_l}) & "
         if cats_l:
-            qs_s += f'Q(cat__in={cats_l}) & '
+            qs_s += f"Q(cat__in={cats_l}) & "
         if brands_l:
-            qs_s += f'Q(brand__in={brands_l}) & '
+            qs_s += f"Q(brand__in={brands_l}) & "
         else:
             pass
         qs_s = qs_s.rstrip()
-        qs_s = qs_s.rstrip('&').rstrip()
-        qs_s += ')'
+        qs_s = qs_s.rstrip("&").rstrip()
+        qs_s += ")"
         qs = eval(qs_s)
 
     if tag:
-       qs = qs.filter(name__icontains=tag)
-    qs_cars = qs.values('car').annotate(scount=Count('car'))
+        qs = qs.filter(name__icontains=tag)
+    qs_cars = qs.values("car").annotate(scount=Count("car"))
 
-    qs_brand = qs.values('brand').annotate(bcount=Count('brand'))
+    qs_brand = qs.values("brand").annotate(bcount=Count("brand"))
 
-    qs_cats = qs.prefetch_related('cat')#.annotate(ccount=Count('cat'))
+    qs_cats = qs.prefetch_related("cat")  # .annotate(ccount=Count('cat'))
     l = []
     for q in qs_cats:
         for c in q.cat.all():
@@ -526,69 +534,64 @@ def search(request):
             if caa.id not in l:
                 l.append(caa.id)
     cats = Categories.objects.filter(parent_id__in=l)
-    
-    ca = [] 
+
+    ca = []
     for c in cats:
         p = qs.filter(cat=c.id)
         if not p:
             continue
-        ca.append({'cat': c, 'ccount': p.count()})
-    sort = request.GET.get('sort', None)
-    show = request.GET.get('show', None)
-    if sort == '3':
-        qs = qs.order_by('-price')
-    elif sort == '2':
-        qs = qs.order_by('price')
-    else: 
-        qs = qs.order_by('?')
+        ca.append({"cat": c, "ccount": p.count()})
+    sort = request.GET.get("sort", None)
+    show = request.GET.get("show", None)
+    if sort == "3":
+        qs = qs.order_by("-price")
+    elif sort == "2":
+        qs = qs.order_by("price")
+    else:
+        qs = qs.order_by("?")
     pag = pag_def(show)
 
     try:
         p = Paginator(qs, pag)
-        page = request.GET.get('page')
+        page = request.GET.get("page")
         objects = p.get_page(page)
     except:
         pass
-    if request.GET.get('load_all') == 'all':
+    if request.GET.get("load_all") == "all":
         objects = qs
-    
+
     # Обработка слов в нормальный падеж
     def words(count):
         if count:
             if count % 10 == 1:
-                word = 'запчасть'
-            elif (count % 10 >= 2 and count % 10 <=4) or (count >= 2 and count <= 4):
-                word = 'запчасти'
+                word = "запчасть"
+            elif (count % 10 >= 2 and count % 10 <= 4) or (count >= 2 and count <= 4):
+                word = "запчасти"
             elif count % 10 > 4 or count > 4:
-                word = 'запчастей'
+                word = "запчастей"
             return word
         else:
             return None
 
-    #Article founder starts here
+    # Article founder starts here
     articles = Blogs.objects.all()
     art_w_list = []
     for i, article in enumerate(articles):
         we = get_weight(article.text, search_list)
         if we > 0.02:
-            art_w_list.append({ 'article': article, 'weight': we})
+            art_w_list.append({"article": article, "weight": we})
         if i > 10:
             break
 
-    
-        
-        
-
-    
     context = {
-                'tags': settings.TAGS_LIST,
-                'objects': objects,
-                'cars': qs_cars, 
-                'search_categories': ca,
-                'brands': qs_brand,
-                'brakes': brakes,
-                'total_items': p.count,
-                'zapchasti_word': words(p.count),
-                'articles': art_w_list,
-            }
-    return render(request, 'products/search.html', context)
+        "tags": settings.TAGS_LIST,
+        "objects": objects,
+        "cars": qs_cars,
+        "search_categories": ca,
+        "brands": qs_brand,
+        "brakes": brakes,
+        "total_items": p.count,
+        "zapchasti_word": words(p.count),
+        "articles": art_w_list,
+    }
+    return render(request, "products/search.html", context)
