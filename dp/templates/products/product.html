@@ -103,17 +103,6 @@
 				{% for p in object.image_path_all %}
 				<div><img src="{% static p %}" alt=""></div>
 				{% endfor %}
-				<!--<div>
-					<div class="embed-responsive embed-responsive-16by9">
-						<iframe class="embed-responsive-item" src="{% static 'http://www.youtube.com/embed/GhyKqj_P2E4' %}" allowfullscreen></iframe>
-					</div>
-				</div>-->
-				<!--<div>
-					<div class="tt-video-block">
-						<a href="#" class="link-video"></a>
-						<video class="movie" src="{% static 'video/video.mp4' %}" poster="video/video_img.jpg"></video>
-					</div>
-				</div>-->
 			</div>
 		</div>
 		<!-- /mobile product slider  -->
@@ -128,12 +117,6 @@
 							<li><img class="zoom-produc about-border" src="{% static p %}" alt="{{ object.name }}"></li>
 							{% endif %}
 							{% endfor %}
-							<!--<li>
-								<div class="tt-video-block">
-									<a href="#" class="link-video"></a>
-									<video class="movie" src="{% static 'video/video.mp4' %}" poster="video/video_img.jpg"></video>
-								</div>
-							</li>-->
 						</ul>
 					</div>
 				</div>
@@ -168,6 +151,15 @@
 								Почему лучше покупать у нас: <a href="{% url 'about' %}">Преимущества и Отзывы >></a>
 							</div>
 							<div class="tt-wrapper">
+                  {% if messages %}
+                    <div class="call-back__row">
+                      <div class="col-item">
+                        {% for message in messages %}
+                        <span class="call-back__message">{{message}}</span>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  {% endif %}
 								<div class="tt-row-custom-01">
 									<div class="col-item">
 										<div class="tt-input-counter style-01">
@@ -183,6 +175,7 @@
 									<!-- Button trigger modal -->
 									<div class="col-item">
 									<button type="button" class="btn btn-lg button-call-product" data-toggle="modal" data-target="#call_form">Обратный звонок</button>
+
 									</div>
 								</div>
 							</div>
@@ -321,7 +314,7 @@
 	{% include 'snippets/comments.html' %}
 </div>
 <!--MODAL_CALLBACK-->
-<div class="modal fade" id="call_form">
+<div class="modal fade" id="call_form" >
 	  <div class="modal-dialog" role="document">
 		<div class="modal-content">
 		  <div class="modal-header">
@@ -332,8 +325,26 @@
 		  </div>
 		  <div class="modal-body">
 			<form method="post" action="{% url 'send_e_form' %}">{% csrf_token %}
-			{{ email_form|crispy }}
-			<button type="submit" class="btn btn-success">отправить</button>
+        <div class="call-form__container">
+          <div class="call-form__item">
+      {{email_form.email_name|as_crispy_field}}
+          </div>
+          <div class="call-form__item">
+      {{email_form.phone|as_crispy_field}}
+          </div>
+
+          <div class="call-form__item">
+            <div class="call-form__captcha-container">
+              <div class="call-form__captcha">
+                <span class="call-form__captcha-left">3</span><span> + </span> <span class="call-form__captcha-right">4</span><span class="call-form__equal">=</span>
+              </div>
+              <div class="call-form__captcha-field">
+                {{email_form.captcha|as_crispy_field}}
+              </div>
+            </div>
+          </div>
+        </div>
+			<button type="submit" class="btn btn-success">Отправить</button>
 			</form>
 		  </div>
 		  <div class="modal-footer">

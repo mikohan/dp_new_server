@@ -9,10 +9,10 @@ from .models import EmailModel
 #     text = forms.CharField(widget=forms.Textarea, label='Ваше сообщение')
 #
 class EmailFormLight(forms.Form):
-    email_name = forms.CharField(label='Ваше Имя', required=False)
-    phone = forms.CharField(label='Ваш телефон')
+    email_name = forms.CharField(label="Ваше Имя", required=False)
+    phone = forms.CharField(label="Ваш телефон")
+    captcha = forms.CharField(label="Результат")
 
 
 class EmailFormOneField(forms.Form):
-    phone = forms.CharField(label='Ваш телефон')
-
+    phone = forms.CharField(label="Ваш телефон")

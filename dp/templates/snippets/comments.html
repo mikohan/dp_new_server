@@ -4,6 +4,9 @@
 				<div class="col-xs-12 col-md-10 col-lg-8 col-md-auto">
 					<div class="form-single-post">
 						<h6 class="tt-title-border"><span class="bblue">ОСТАВИТЬ КОММЕНТАРИЙ</span> (Требуется Логин)</h6>
+            {% if message %}
+            <h6 class="tt-title-border"><span class="bred">{{ message }}</span></h6>
+            {% endif %}
 
 							<form action="." method="post">{% csrf_token %}
 								<!--<div class="form-group">

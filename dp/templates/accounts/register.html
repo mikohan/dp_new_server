@@ -31,7 +31,7 @@
 						<div class="tt-item">
 							<h2 class="tt-title">УЖЕ ЕСТЬ АКАУНТ</h2>
 							<p>
-								By creating an account with our store, you will be able to move through the checkout process faster, store multiple shipping addresses, view and track your orders in your account and more.
+              Создайте аккаунт для отслеживания истории заказов.
 							</p>
 							<div class="form-group">
 								<a href="{% url 'login' %}" class="btn btn-top btn-border">СТРАНИЦА ВХОДА</a>
@@ -46,21 +46,34 @@
 								<form id="customer_login" method="post" novalidate="novalidate">{% csrf_token %}
 									<div class="form-group">
 										<div class="tt-required">* Обязательные поля</div>
-										{{ form }}
 									</div>
-									<div class="row">
-										<div class="col-auto mr-auto">
-											<div class="form-group">
-												<button class="btn btn-border" type="submit">ВОЙТИ</button>
-											</div>
+                  <div>
+                    <div class="register-form__label">*Имя пользователя</div>
+                    {{form.username}}
+                  </div>
+                  <div>
+                    <div class="register-form__label">*емейл</div>
+                    {{form.email}}
+                  </div>
+                  <div>
+                    <div class="register-form__label">*Повторно емейл</div>
+                    {{form.email2}}
+                  </div>
+                  <div>
+                    <div class="register-form__label">*Пароль</div>
+                    {{form.password}}
+                  </div>
+									<div class="register-form__bottom-container">
+                    <div class="register-form__captcha-container">
+                      <div class="register-form__captcha">
+                        <span class="register-form__captcha-left">3</span><span> + </span> <span class="register-form__captcha-right">4</span>
+                        <span class="register-form__equal"> = </span>
+                      </div>
+                      <div class="call-form__captcha-field">
+                        {{form.captcha}}
+                      </div>
 										</div>
-										<div class="col-auto align-self-end">
-											<div class="form-group">
-												<ul class="additional-links">
-													<li><a href="#">Забыли пароль?</a></li>
-												</ul>
-											</div>
-										</div>
+                    <button class="btn btn-border" type="submit">СОЗДАТЬ АКАУНТ</button>
 									</div>
 								</form>
 							</div>
