@@ -335,10 +335,11 @@
 
           <div class="call-form__item">
             <div class="call-form__captcha-container">
-              <div class="call-form__captcha">
-                <span class="call-form__captcha-left">3</span><span> + </span>
-                <span class="call-form__captcha-right">4</span><span class="call-form__equal">=</span>
-              </div>
+              <!-- <div class="call-form__captcha"> -->
+              <!--   <!-1- <span class="call-form__captcha-left">3</span><span> + </span> -1-> -->
+              <!--   <!-1- <span class="call-form__captcha-right">4</span><span class="call-form__equal">=</span> -1-> -->
+              <!-- </div> -->
+              <img src={% static 'images/captcha.jpg' %} />
               <div class="call-form__captcha-field">
                 {{email_form.captcha|as_crispy_field}}
               </div>

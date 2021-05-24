@@ -270,13 +270,13 @@
   width: 100%;
 }
 .call-form__captcha-container {
-  padding-left: 1rem;
-  padding-right: 1rem;
+  border: 1px solid pink;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 .call-form__captcha-field {
+  margin-left: 5px;
   width: 70px;
 }
 .call-form__captcha {
