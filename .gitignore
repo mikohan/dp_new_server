@@ -3,9 +3,17 @@
 # described in https://git-scm.com/docs/gitignore
 
 my.cnf
-img
+skin*
 video
-images
+lookbook
+custom
+other
+portfolio
+product
+promo
+skin*
+slides
+img
 static_root
 *.egg-info
 *.pot
