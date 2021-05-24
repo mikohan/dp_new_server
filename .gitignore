@@ -3,8 +3,10 @@
 # described in https://git-scm.com/docs/gitignore
 
 my.cnf
-static
-stateic_root
+img
+video
+images
+static_root
 *.egg-info
 *.pot
 *.py[co]
