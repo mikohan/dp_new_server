@@ -233,98 +233,101 @@ def subcat(request, slug, **kwargs):
     if request.session.get("car"):
         car = request.session["car"]
     brand = request.GET.get("brand", None)
-    cats_tmp = Categories.objects.get(slug=slug)
-    second_level_cats = Categories.objects.filter(parent_id=cats_tmp.id)
-
-    if cats_tmp.id < 99:
-        bread1 = Categories.objects.get(slug=slug, parent_id=0)
-        bread2 = None
-        bread3 = None
-    elif cats_tmp.id > 99 and cats_tmp.id < 999:
-        bread2 = cats_tmp
-        bread1 = Categories.objects.get(id=bread2.parent_id)
-        bread3 = None
-    else:
-        bread3 = cats_tmp
-        bread2 = Categories.objects.get(id=bread3.parent_id)
-        bread1 = Categories.objects.get(id=bread2.parent_id)
-
-    cats = []
-    for c in second_level_cats:
-        nums = Products.objects.filter(cat__in=categories_tree(c.id)).count()
-        if nums != 0:
-            setattr(c, "prod_count", nums)
-            cats.append(c)
-
-    cats_list = []
-    if len(cats) == 0:
-        if brand:
-            qs = Products.objects.filter(cat=cats_tmp.id, brand=brand).distinct()
-        else:
-            qs = Products.objects.filter(cat=cats_tmp.id).distinct()
-    else:
-        for c in cats:
-            cats_list.append(c.id)
-        groups = Categories.objects.filter(parent_id__in=cats_list)
-        for g in groups:
-            cats_list.append(g.id)
-        if brand:
-            qs = Products.objects.filter(cat__in=cats_list, brand=brand).distinct()
-        else:
-            qs = Products.objects.filter(cat__in=cats_list).distinct()
-
-    sort = request.GET.get("sort", None)
-    show = request.GET.get("show", None)
-    if request.session.get("car"):
-        car = request.session["car"]
-        qs = qs.filter(car=car)
-    if sort == "2":
-        qs = qs.order_by("price")
-    elif sort == "3":
-        qs = qs.order_by("-price")
-    else:
-        qs = qs.order_by("?")
-    qs = qs
-    pag = pag_def(show)
-
-    brands = qs.values("brand").annotate(brand_count=Count("brand"))
-    h1 = cats_tmp.name
     try:
-        p = Paginator(qs, pag)
-        page = request.GET.get("page")
-        objects = p.get_page(page)
+        cats_tmp = Categories.objects.get(slug=slug)
+        second_level_cats = Categories.objects.filter(parent_id=cats_tmp.id)
+
+        if cats_tmp.id < 99:
+            bread1 = Categories.objects.get(slug=slug, parent_id=0)
+            bread2 = None
+            bread3 = None
+        elif cats_tmp.id > 99 and cats_tmp.id < 999:
+            bread2 = cats_tmp
+            bread1 = Categories.objects.get(id=bread2.parent_id)
+            bread3 = None
+        else:
+            bread3 = cats_tmp
+            bread2 = Categories.objects.get(id=bread3.parent_id)
+            bread1 = Categories.objects.get(id=bread2.parent_id)
+
+        cats = []
+        for c in second_level_cats:
+            nums = Products.objects.filter(cat__in=categories_tree(c.id)).count()
+            if nums != 0:
+                setattr(c, "prod_count", nums)
+                cats.append(c)
+
+        cats_list = []
+        if len(cats) == 0:
+            if brand:
+                qs = Products.objects.filter(cat=cats_tmp.id, brand=brand).distinct()
+            else:
+                qs = Products.objects.filter(cat=cats_tmp.id).distinct()
+        else:
+            for c in cats:
+                cats_list.append(c.id)
+            groups = Categories.objects.filter(parent_id__in=cats_list)
+            for g in groups:
+                cats_list.append(g.id)
+            if brand:
+                qs = Products.objects.filter(cat__in=cats_list, brand=brand).distinct()
+            else:
+                qs = Products.objects.filter(cat__in=cats_list).distinct()
+
+        sort = request.GET.get("sort", None)
+        show = request.GET.get("show", None)
+        if request.session.get("car"):
+            car = request.session["car"]
+            qs = qs.filter(car=car)
+        if sort == "2":
+            qs = qs.order_by("price")
+        elif sort == "3":
+            qs = qs.order_by("-price")
+        else:
+            qs = qs.order_by("?")
+        qs = qs
+        pag = pag_def(show)
+
+        brands = qs.values("brand").annotate(brand_count=Count("brand"))
+        h1 = cats_tmp.name
+        try:
+            p = Paginator(qs, pag)
+            page = request.GET.get("page")
+            objects = p.get_page(page)
+        except:
+            pass
+        if request.GET.get("load_all") == "all":
+            objects = qs
+
+        # Article founder starts here
+        search_list = search_splitter(h1)
+        articles = Blogs.objects.all()
+        art_w_list = []
+        for i, article in enumerate(articles):
+            we = get_weight(article.text, search_list)
+            if we > 0.02:
+                art_w_list.append({"article": article, "weight": we})
+            if i > 10:
+                break
+
+        context = {
+            "objects": objects,
+            "cars": show_cars(),
+            "slug": slug,
+            "categories": cats,
+            "brands": brands,
+            "title_h1": h1,
+            "brand": brand,
+            "bread1": bread1,
+            "bread2": bread2,
+            "bread3": bread3,
+            "cat": cats_tmp,
+            "articles": art_w_list,
+        }
+
+        return render(request, "products/newparts.html", context)
     except:
-        pass
-    if request.GET.get("load_all") == "all":
-        objects = qs
-
-    # Article founder starts here
-    search_list = search_splitter(h1)
-    articles = Blogs.objects.all()
-    art_w_list = []
-    for i, article in enumerate(articles):
-        we = get_weight(article.text, search_list)
-        if we > 0.02:
-            art_w_list.append({"article": article, "weight": we})
-        if i > 10:
-            break
-
-    context = {
-        "objects": objects,
-        "cars": show_cars(),
-        "slug": slug,
-        "categories": cats,
-        "brands": brands,
-        "title_h1": h1,
-        "brand": brand,
-        "bread1": bread1,
-        "bread2": bread2,
-        "bread3": bread3,
-        "cat": cats_tmp,
-        "articles": art_w_list,
-    }
-
-    return render(request, "products/newparts.html", context)
+        raise Http404
 
 
 # Detailed product view starts here
