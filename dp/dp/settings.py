@@ -67,6 +67,7 @@ ALLOWED_HOSTS = [
 SITE_URL = "https://ducatoparts.ru"
 
 # Application definition
+# comment
 
 INSTALLED_APPS = [
     "django.contrib.admin",
