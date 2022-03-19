@@ -53,8 +53,8 @@ SALES_ON_HOME = {
 }
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  # True
-# DEBUG = True
+# DEBUG = False  # True
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "dp.loc",
