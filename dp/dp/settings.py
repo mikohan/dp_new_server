@@ -6,6 +6,7 @@ except ImportError:
     pass
 
 CURRENCY_URL_MAIN = "http://api.exchangeratesapi.io/v1/"
+CURRENCY_RATE = 300
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

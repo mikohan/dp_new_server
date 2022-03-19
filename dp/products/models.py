@@ -12,6 +12,7 @@ from star_ratings.models import Rating
 from datetime import datetime, timedelta
 from currency.models import UsdRate
 
+
 class Categories(models.Model):
     name = models.CharField(max_length=100, null=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
@@ -59,13 +60,13 @@ class Products(models.Model):
     def price(self):
         today = datetime.now().date()
         yesterday = today - timedelta(days=1) 
-        rate = 90
-        try:
-            obj = UsdRate.objects.get(date=yesterday)
-            rate = obj.rate
+        rate = settings.CURRENCY_RATE
+        # try:
+        #     obj = UsdRate.objects.get(date=yesterday)
+        #     rate = obj.rate
 
-        except:
-            obj = UsdRate.objects.first()
+        # except:
+        #     obj = UsdRate.objects.first()
         return round(float(self._price_eur) * float(rate))
 
 
