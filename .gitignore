@@ -34,3 +34,5 @@ pyvenv.cfg
 includes
 lib
 vnev
+venv
+local_settings.py
