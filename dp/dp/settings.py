@@ -15,7 +15,7 @@ LOGIN_URL = "login"
 SHOP_EMAILS_MANAGERS = ["angara77@gmail.com", "angara99@gmail.com"]
 SHOP_EMAIL_FROM = "DucatoParts <partshub77@gmail.com>"
 # SHOP_TEL = '8 (800) 302-53-50'
-SHOP_TEL = "8 (800) 200-99-53"
+SHOP_TEL = "8 (495) 777-93-75"
 # SHOP_TEL2 = '+7 (499) 380-78-08'
 SHOP_TEL2 = ""
 SHOP_TEL3 = "+7 (495) 646-99-53"
@@ -25,7 +25,7 @@ SHOP_ADDRESS_LINE_2 = "1 этаж, офис 9"
 SHOP_WORKING_HOURS = "Ежедневно с 9:00 до 19:00"
 SHOP_WHATSAPP = "+7 (919) 770-39-53"
 SHOP_SITE_HOST = "https://ducatoparts.ru"
-SHOP_TEL_NO_BRACKETS = "+7-800-302-53-50"
+SHOP_TEL_NO_BRACKETS = "+7-495-777-93-75"
 BASE_URL = "https://ducatoparts.ru"
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
