@@ -235,3 +235,10 @@ STATICFILES_DIRS = [
 
 STAR_RATINGS_ANONYMOUS = True
 STAR_RATINGS_RERATE = False
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp-relay.sendinblue.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "angara99@gmail.com"
+
