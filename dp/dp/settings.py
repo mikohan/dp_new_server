@@ -12,7 +12,7 @@ CURRENCY_RATE = 300
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGIN_URL = "login"
 
-SHOP_EMAILS_MANAGERS = ["angara77@gmail.com", "angara99@gmail.com"]
+SHOP_EMAILS_MANAGERS = ["angara77@gmail.com", "angara99@gmail.com", "zakaz@r15c.ru"]
 SHOP_EMAIL_FROM = "DucatoParts <partshub77@gmail.com>"
 # SHOP_TEL = '8 (800) 302-53-50'
 SHOP_TEL = "8 (495) 255-36-60"
