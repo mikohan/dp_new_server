@@ -61,7 +61,7 @@ def about(request):
         'form': form,
 
             }
-    return render(request, 'home/about.html', context)
+    return render(request, 'home/contacts.html', context)
 
 def payment(request):
     context = {
